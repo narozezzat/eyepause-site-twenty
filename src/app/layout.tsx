@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { site } from "@/config/site";
 import { getRelease } from "@/lib/releases";
+import { THEME_COLORS, themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -31,15 +32,25 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   colorScheme: "dark light",
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0c0e10" },
-    { media: "(prefers-color-scheme: light)", color: "#f4f3ef" },
+    // Media-scoped for System; ThemeToggle repaints both for an explicit choice.
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
+    { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
   ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const { version } = getRelease();
   return (
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
+    // The head script sets data-theme and color-scheme before hydration.
+    <html
+      lang="en"
+      className={`${archivo.variable} ${plexMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/* First in <head> and synchronous, so the stored theme applies before first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <a className="skip-link" href="#main">
           Skip to content

@@ -15,10 +15,15 @@
   text-decoration: none;
 }
 
+.end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .nav {
   display: flex;
   gap: 8px;
-  margin-right: -10px;
   font: 400 13px/1 var(--mono);
 }
 
@@ -36,6 +41,9 @@
 }
 
 @media (max-width: 420px) {
+  .end {
+    gap: 4px;
+  }
   .nav {
     gap: 0;
     font-size: 12px;

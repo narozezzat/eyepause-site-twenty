@@ -1,0 +1,49 @@
+.toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 104px;
+  height: var(--target);
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink-2);
+  font: 400 12px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.label {
+  flex: 1;
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .toggle {
+    width: var(--target);
+    padding: 0;
+  }
+  .label {
+    display: none;
+  }
+}
