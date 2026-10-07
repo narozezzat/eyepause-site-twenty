@@ -1,0 +1,38 @@
+.main {
+  padding-block: 56px 72px;
+  border-bottom: 1px solid var(--line);
+}
+
+.code {
+  margin: 0;
+  font: 700 clamp(120px, 24vw, 280px) / 0.82 var(--display);
+  font-variation-settings: "wdth" 62;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.main h1 {
+  margin: 32px 0 12px;
+  font: 600 clamp(28px, 3.4vw, 42px) / 1.1 var(--display);
+  font-variation-settings: "wdth" 92;
+  letter-spacing: -0.02em;
+}
+
+.text {
+  margin: 0 0 28px;
+  max-width: 48ch;
+  color: var(--ink-2);
+}
+
+.home {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--target);
+  padding: 14px 20px;
+  background: var(--ink);
+  color: var(--bg);
+  font: 600 15px/1 var(--display);
+  text-decoration: none;
+}

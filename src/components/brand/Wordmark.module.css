@@ -1,0 +1,16 @@
+.mark {
+  font-weight: 700;
+  font-variation-settings: "wdth" 118;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.dot {
+  display: inline-block;
+  width: 0.24em;
+  height: 0.24em;
+  margin-left: 0.08em;
+  border-radius: 50%;
+  background: var(--mint);
+  vertical-align: baseline;
+}
