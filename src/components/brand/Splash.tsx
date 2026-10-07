@@ -1,5 +1,4 @@
 import { Wordmark } from "./Wordmark";
-import styles from "./Splash.module.css";
 
 /**
  * Focus-shift intro: the wordmark starts blurred (near) and resolves sharp (far).
@@ -9,12 +8,17 @@ import styles from "./Splash.module.css";
  */
 export function Splash() {
   return (
-    <div className={styles.splash} aria-hidden="true">
+    <div
+      className="pointer-events-none fixed inset-0 z-50 grid animate-splash-out place-items-center bg-bg motion-reduce:hidden"
+      aria-hidden="true"
+    >
       <div>
-        <b className={styles.word}>
-          <Wordmark />
+        <b className="block animate-focus-in text-splash">
+          <Wordmark className="font-extrabold wdth-125" />
         </b>
-        <small className={styles.tag}>Look twenty feet away</small>
+        <small className="mt-3.5 block animate-fade-in-late text-center font-mono text-xs leading-none tracking-[0.2em] text-fg-subtle uppercase">
+          Look twenty feet away
+        </small>
       </div>
     </div>
   );

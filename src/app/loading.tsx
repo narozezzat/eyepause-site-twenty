@@ -1,13 +1,12 @@
 import { Wordmark } from "@/components/brand/Wordmark";
-import styles from "./loading.module.css";
 
 export default function Loading() {
   return (
-    <div className={styles.loading} role="status">
-      <span className={styles.mark}>
-        <Wordmark />
+    <div className="grid min-h-[60vh] place-items-center" role="status">
+      <span className="text-loading font-extrabold tracking-display wdth-125 animate-breathe motion-reduce:animate-none">
+        <Wordmark className="font-extrabold wdth-125" />
       </span>
-      <span className="visually-hidden">Loading</span>
+      <span className="sr-only">Loading</span>
     </div>
   );
 }

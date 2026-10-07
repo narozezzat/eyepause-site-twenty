@@ -3,7 +3,8 @@
 import type { MouseEvent } from "react";
 import type { DownloadState } from "@/hooks/useDownloadState";
 import type { DownloadOption } from "@/lib/releases";
-import styles from "./DownloadPanel.module.css";
+import { cn } from "@/lib/cn";
+import { goClass, goLitClass, goMutedClass, goSolidClass } from "./buttonStyles";
 
 interface DownloadButtonProps {
   option: DownloadOption;
@@ -17,7 +18,7 @@ interface DownloadButtonProps {
 export function DownloadButton({ option, state, selected, describedBy, onBegin }: DownloadButtonProps) {
   if (option.status === "coming-soon") {
     return (
-      <span className={`${styles.go} ${styles.muted}`} aria-disabled="true">
+      <span className={cn(goClass, goMutedClass)} aria-disabled="true">
         Coming later
       </span>
     );
@@ -25,7 +26,7 @@ export function DownloadButton({ option, state, selected, describedBy, onBegin }
 
   if (option.status === "unavailable" || !option.primary) {
     return (
-      <span className={`${styles.go} ${styles.muted}`} aria-disabled="true">
+      <span className={cn(goClass, goMutedClass)} aria-disabled="true">
         Temporarily unavailable
       </span>
     );
@@ -46,7 +47,11 @@ export function DownloadButton({ option, state, selected, describedBy, onBegin }
 
   return (
     <a
-      className={`${styles.go} ${selected ? styles.lit : ""}`}
+      className={cn(
+        goClass,
+        selected ? goLitClass : goSolidClass,
+        "hover:translate-x-0.5 aria-busy:cursor-progress",
+      )}
       href={option.primary.href}
       download={option.primary.name}
       onClick={onClick}
@@ -56,10 +61,10 @@ export function DownloadButton({ option, state, selected, describedBy, onBegin }
       {state === "starting" ? (
         <>
           Preparing
-          <span className={styles.dots} aria-hidden="true">
-            <i />
-            <i />
-            <i />
+          <span className="inline-flex gap-0.5" aria-hidden="true">
+            <i className="size-1 animate-dot rounded-full bg-current" />
+            <i className="size-1 animate-dot rounded-full bg-current [animation-delay:0.15s]" />
+            <i className="size-1 animate-dot rounded-full bg-current [animation-delay:0.3s]" />
           </span>
         </>
       ) : state === "started" ? (

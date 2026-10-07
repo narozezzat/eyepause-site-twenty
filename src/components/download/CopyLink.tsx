@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import styles from "./DownloadPanel.module.css";
+import { cn } from "@/lib/cn";
+import { goClass, goSolidClass } from "./buttonStyles";
 
 type CopyState = "idle" | "copied" | "failed";
 
@@ -27,10 +28,10 @@ export function CopyLink() {
 
   return (
     <>
-      <button type="button" className={`${styles.go} ${styles.copy}`} onClick={copy}>
+      <button type="button" className={cn(goClass, goSolidClass, "md:w-full")} onClick={copy}>
         {state === "copied" ? "Link copied" : "Copy link"}
       </button>
-      <span className="visually-hidden" role="status">
+      <span className="sr-only" role="status">
         {state === "copied"
           ? "Link copied to clipboard"
           : state === "failed"
@@ -38,7 +39,7 @@ export function CopyLink() {
             : ""}
       </span>
       {state === "failed" ? (
-        <span className={styles.copyFail} aria-hidden="true">
+        <span className="text-xs text-fg-subtle" aria-hidden="true">
           Could not copy. Share this page from your browser menu instead.
         </span>
       ) : null}
