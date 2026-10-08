@@ -14,3 +14,4 @@ export function getRelease(): Release {
 export function getDownloads(): DownloadOption[] {
   return resolveDownloads(getRelease(), platforms, withBasePath("/downloads"));
 }
+export { availabilityOf, extensionOf, type Availability } from "./availability";

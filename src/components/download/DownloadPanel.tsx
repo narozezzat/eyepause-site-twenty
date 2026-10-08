@@ -1,91 +1,79 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useState } from "react";
+import { platforms } from "@/config/platforms";
 import { useDetectedPlatform } from "@/hooks/useDetectedPlatform";
-import { formatDate } from "@/lib/format";
 import { isMobile } from "@/lib/platform/detect";
 import type { DownloadOption } from "@/lib/releases";
-import { nextRadioIndex } from "@/lib/theme";
-import { CopyLink } from "./CopyLink";
-import { PlatformRow } from "./PlatformRow";
+import { DownloadButton } from "./DownloadButton";
+import { PlatformPicker } from "./PlatformPicker";
 
-/** Download ledger: one row per platform, the chosen row lit. Defaults to the visitor's OS. */
+/** The download section: pick a platform, then act on it. Defaults to the visitor's OS, else macOS. */
 export function DownloadPanel({ options }: { options: DownloadOption[] }) {
   const detected = useDetectedPlatform();
   const [override, setOverride] = useState<string | null>(null);
-  const radios = useRef<(HTMLDivElement | null)[]>([]);
 
-  const recommendedId = options.some((o) => o.platformId === detected) ? detected : null;
+  const detectedId = options.some((o) => o.platformId === detected)
+    ? detected
+    : null;
   const fallbackId =
-    options.find((o) => o.status === "available")?.platformId ?? options[0]?.platformId ?? null;
-  const selectedId = override ?? recommendedId ?? fallbackId;
+    options.find((o) => o.status === "available")?.platformId ??
+    options[0]?.platformId ??
+    null;
+  const selectedId = override ?? detectedId ?? fallbackId;
+  const selected = options.find((o) => o.platformId === selectedId) ?? null;
   const mobile = detected !== null && isMobile(detected);
-  const desktopElsewhere = detected === "windows" || detected === "linux";
-  const latest = options[0];
-
-  const onKeyDown = (index: number) => (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === " " || event.key === "Enter") {
-      event.preventDefault();
-      setOverride(options[index].platformId);
-      return;
-    }
-    const next = nextRadioIndex(event.key, index, options.length);
-    if (next === null) return;
-    event.preventDefault();
-    setOverride(options[next].platformId);
-    radios.current[next]?.focus();
-  };
+  const steps = platforms.find((p) => p.id === selectedId)?.installSteps ?? [];
 
   return (
-    <section className="scroll-mt-4 py-16 sm:py-20 lg:py-28" id="get" aria-labelledby="get-h">
-      <div className="mb-4.5 flex flex-wrap items-baseline justify-between gap-3">
-        <h2
-          id="get-h"
-          className="m-0 font-mono text-body leading-none font-medium tracking-label uppercase"
-        >
-          Download
-        </h2>
-        {latest ? (
-          <span className="font-mono text-caption leading-none text-fg-subtle">
-            Latest · v{latest.version} · <time dateTime={latest.publishedAt}>{formatDate(latest.publishedAt)}</time>
-          </span>
-        ) : null}
+    <section
+      id="download"
+      aria-labelledby="download-title"
+      className="download-section"
+    >
+      <div className="chapter-no">
+        <b>04</b>Make a little room
       </div>
-
-      {mobile ? (
-        <div className="mb-4.5 grid gap-3.5 border border-border bg-surface p-4.5 font-mono text-caption text-fg-muted">
-          <p className="m-0">
-            <strong className="mb-1 block font-sans text-[1.0625rem] leading-[1.3] font-semibold text-fg">
-              EyePause is a Mac app.
-            </strong> Open this page on your Mac to install it, or
-            copy the link and send it there.
-          </p>
-          <CopyLink />
-        </div>
-      ) : null}
-
-      <div className="border-t border-border" role="radiogroup" aria-label="Platform">
-        {options.map((option, index) => (
-          <PlatformRow
-            key={option.platformId}
-            option={option}
-            selected={option.platformId === selectedId}
-            recommended={option.platformId === recommendedId}
-            focusable={option.platformId === selectedId}
-            radioRef={(el) => {
-              radios.current[index] = el;
-            }}
-            onSelect={() => setOverride(option.platformId)}
-            onKeyDown={onKeyDown(index)}
-          />
-        ))}
-      </div>
-
-      {desktopElsewhere ? (
-        <p className="mt-4.5 mb-0 font-mono text-caption text-fg-subtle">
-          EyePause is macOS-only for now. You can still grab the Mac build for another machine.
+      <div className="download-heading">
+        <h2 id="download-title">Your next break starts here.</h2>
+        <p>
+          One small app.
+          <br />A little more space in your day.
         </p>
-      ) : null}
+      </div>
+      <PlatformPicker
+        options={options}
+        selectedId={selectedId}
+        detectedId={detectedId}
+        onChange={setOverride}
+        action={
+          selected ? (
+            <DownloadButton
+              key={selected.platformId}
+              option={selected}
+              steps={steps}
+              mobile={mobile}
+              onShowMac={
+                options.some((o) => o.platformId === "macos")
+                  ? () => setOverride("macos")
+                  : undefined
+              }
+            />
+          ) : null
+        }
+      />
+      <p className="download-note">
+        {mobile
+          ? "On your phone? Open this page on your Mac to install EyePause."
+          : "Free to use. No sign-up. Just a Mac and a moment."}
+      </p>
+      <noscript>
+        <p className="download-note">
+          EyePause runs on macOS 14 or later. To install: open the DMG, drag
+          EyePause into Applications, then launch it. Enable JavaScript to
+          choose another platform.
+        </p>
+      </noscript>
     </section>
   );
 }

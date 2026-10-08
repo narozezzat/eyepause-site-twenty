@@ -1,107 +1,164 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useRef, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { cn } from "@/lib/cn";
-import { THEME_OPTIONS, nextRadioIndex, parseThemeChoice, type ThemeChoice } from "@/lib/theme";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+} from "react";
+import { nextRadioIndex, parseThemeChoice } from "@/lib/theme";
 
-const icons: Record<ThemeChoice, ReactNode> = {
-  system: (
-    <>
-      <rect x="2.5" y="3.5" width="15" height="10" rx="1" />
-      <path d="M7 16.5h6M10 13.5v3" />
-    </>
-  ),
-  light: (
-    <>
-      <circle cx="10" cy="10" r="3.5" />
-      <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4" />
-    </>
-  ),
-  dark: <path d="M16.5 12.2A7 7 0 0 1 7.8 3.5a7 7 0 1 0 8.7 8.7Z" />,
-};
+type Option = "system" | "light" | "dark";
+const OPTIONS: readonly Option[] = ["system", "light", "dark"];
+const LABELS: Record<Option, string> = { system: "System", light: "Light", dark: "Dark" };
 
 const subscribe = () => () => {};
 
-/** False during prerender and hydration, true after: the stored theme is only known on the client. */
-function useMounted(): boolean {
-  return useSyncExternalStore(
+function ThemeIcon({ option }: { option: Option }) {
+  return (
+    <svg className="theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      {option === "light" ? (
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2.75v1.5M12 19.75v1.5M4.75 4.75l1.06 1.06M18.19 18.19l1.06 1.06M2.75 12h1.5M19.75 12h1.5M4.75 19.25l1.06-1.06M18.19 5.81l1.06-1.06" />
+        </>
+      ) : option === "dark" ? (
+        <path d="M19.5 14.6A7.75 7.75 0 0 1 9.4 4.5a7.75 7.75 0 1 0 10.1 10.1Z" />
+      ) : (
+        <>
+          <rect x="3" y="4.5" width="18" height="12" rx="2" />
+          <path d="M8.5 20h7M12 16.5V20" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/**
+ * Color theme menu button. A native select can't be styled or placed: macOS
+ * draws its popup over the button. This opens a small menu right below it.
+ */
+export function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const mounted = useSyncExternalStore(
     subscribe,
     () => true,
     () => false,
   );
-}
+  const current: Option = mounted ? parseThemeChoice(theme) : "system";
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const items = useRef<(HTMLButtonElement | null)[]>([]);
+  const menuId = useId();
 
-const groupClass = "inline-flex shrink-0 border border-border";
-const optionClass = "inline-flex size-11 items-center justify-center";
+  useEffect(() => {
+    if (!open) return;
+    items.current[OPTIONS.indexOf(current)]?.focus({ preventScroll: true });
+    const onPointerDown = (event: PointerEvent) => {
+      if (!root.current?.contains(event.target as Node)) setOpen(false);
+    };
+    // The header is sticky, so an open menu would hang still while the page
+    // slides under it. Close on a real scroll, like a native macOS menu, but
+    // ignore the tail of trackpad momentum or a smooth scroll still settling.
+    const startY = window.scrollY;
+    const onScroll = () => {
+      if (Math.abs(window.scrollY - startY) < 24) return;
+      setOpen(false);
+      trigger.current?.focus({ preventScroll: true });
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [open, current]);
 
-/** System / Light / Dark segmented radiogroup with roving tabindex. */
-export function ThemeToggle() {
-  const mounted = useMounted();
-  const { theme, setTheme } = useTheme();
-  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  const choose = (option: Option) => {
+    setTheme(option);
+    setOpen(false);
+    trigger.current?.focus({ preventScroll: true });
+  };
 
-  if (!mounted) {
-    // Same box as the real control, so hydration swaps it in without layout shift.
-    return (
-      <span className={groupClass} aria-hidden="true">
-        {THEME_OPTIONS.map((o) => (
-          <span key={o.value} className={optionClass} />
-        ))}
-      </span>
-    );
-  }
+  const onTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      setOpen(true);
+    }
+  };
 
-  const current = parseThemeChoice(theme);
-
-  const onKeyDown = (index: number) => (event: KeyboardEvent<HTMLButtonElement>) => {
-    const next = nextRadioIndex(event.key, index, THEME_OPTIONS.length);
+  const onMenuKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+      trigger.current?.focus({ preventScroll: true });
+      return;
+    }
+    if (event.key === "Tab") {
+      setOpen(false);
+      return;
+    }
+    const index = items.current.indexOf(document.activeElement as HTMLButtonElement);
+    const next = nextRadioIndex(event.key, index, OPTIONS.length);
     if (next === null) return;
     event.preventDefault();
-    setTheme(THEME_OPTIONS[next].value);
-    buttons.current[next]?.focus();
+    items.current[next]?.focus({ preventScroll: true });
   };
 
   return (
-    <div role="radiogroup" aria-label="Color theme" className={groupClass}>
-      {THEME_OPTIONS.map((option, index) => {
-        const checked = option.value === current;
-        return (
-          <button
-            key={option.value}
-            ref={(el) => {
-              buttons.current[index] = el;
-            }}
-            type="button"
-            role="radio"
-            aria-checked={checked}
-            tabIndex={checked ? 0 : -1}
-            title={option.label}
-            onClick={() => setTheme(option.value)}
-            onKeyDown={onKeyDown(index)}
-            className={cn(
-              optionClass,
-              "cursor-pointer transition-colors focus-visible:-outline-offset-2",
-              checked ? "bg-fg text-bg" : "text-fg-muted hover:text-fg",
-            )}
-          >
-            <svg
-              className="size-4.5"
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              focusable="false"
+    <div className="theme-menu" ref={root}>
+      <button
+        ref={trigger}
+        type="button"
+        className="theme-trigger"
+        aria-label={`Color theme: ${LABELS[current]}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={open ? menuId : undefined}
+        data-pending={mounted ? undefined : ""}
+        onClick={() => setOpen((value) => !value)}
+        onKeyDown={onTriggerKeyDown}
+      >
+        <ThemeIcon option={current} />
+        <span className="theme-current">{LABELS[current]}</span>
+        <svg className="theme-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="m7 10 5 5 5-5" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          id={menuId}
+          role="menu"
+          aria-label="Color theme"
+          className="theme-list"
+          onKeyDown={onMenuKeyDown}
+        >
+          {OPTIONS.map((option, i) => (
+            <button
+              key={option}
+              ref={(node) => {
+                items.current[i] = node;
+              }}
+              type="button"
+              role="menuitemradio"
+              aria-checked={option === current}
+              tabIndex={-1}
+              className="theme-item"
+              onClick={() => choose(option)}
             >
-              {icons[option.value]}
-            </svg>
-            <span className="sr-only">{option.label}</span>
-          </button>
-        );
-      })}
+              <ThemeIcon option={option} />
+              <span>{LABELS[option]}</span>
+              <svg className="theme-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="m5 12.5 4.5 4.5L19 7.5" />
+              </svg>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
