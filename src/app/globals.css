@@ -264,6 +264,11 @@
     stroke-width: 1.5;
     flex-shrink: 0;
   }
+  /* lucide sets round caps as attributes; keep the site's square edges */
+  .lucide {
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
   p,
   h1,
   h2,

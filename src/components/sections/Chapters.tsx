@@ -1,3 +1,4 @@
+import { Pause, Settings2, Volume2 } from "lucide-react";
 import { BreakPreview } from "./BreakPreview";
 import { ExercisePreview } from "./ExercisePreview";
 import { StatsPreview } from "./StatsPreview";
@@ -54,9 +55,7 @@ export function Chapters() {
           </div>
           <div>
             <div className="feature-row">
-              <svg aria-hidden="true">
-                <use href="#pause" />
-              </svg>
+              <Pause aria-hidden="true" />
               <div>
                 <h3>It pauses when you do.</h3>
                 <p>
@@ -66,9 +65,7 @@ export function Chapters() {
               </div>
             </div>
             <div className="feature-row">
-              <svg aria-hidden="true">
-                <use href="#settings" />
-              </svg>
+              <Settings2 aria-hidden="true" />
               <div>
                 <h3>Your day. Your settings.</h3>
                 <p>
@@ -78,9 +75,7 @@ export function Chapters() {
               </div>
             </div>
             <div className="feature-row">
-              <svg aria-hidden="true">
-                <use href="#sound" />
-              </svg>
+              <Volume2 aria-hidden="true" />
               <div>
                 <h3>A sound, or silence.</h3>
                 <p>

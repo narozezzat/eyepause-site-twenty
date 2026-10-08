@@ -1,3 +1,4 @@
+import { ArrowDownToLine } from "lucide-react";
 import { MenuPreview } from "./MenuPreview";
 export function Hero() {
   return (
@@ -45,9 +46,7 @@ export function Hero() {
           </p>
           <a href="#download" className="btn">
             Get EyePause for Mac
-            <svg aria-hidden="true">
-              <use href="#arrow" />
-            </svg>
+            <ArrowDownToLine aria-hidden="true" />
           </a>
           <small>Free. Local. No account required.</small>
         </div>

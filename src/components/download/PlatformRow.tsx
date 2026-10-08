@@ -1,5 +1,6 @@
 "use client";
 
+import { LayoutGrid, Monitor } from "lucide-react";
 import type { KeyboardEvent, Ref } from "react";
 import type { DownloadOption } from "@/lib/releases";
 import { availabilityOf } from "@/lib/releases";
@@ -36,13 +37,7 @@ export function PlatformRow({
       onKeyDown={onKeyDown}
       className="platform-choice"
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        {id === "windows" ? (
-          <path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z" />
-        ) : (
-          <path d="M3 4h18v13H3zM8 21h8m-4-4v4" />
-        )}
-      </svg>
+      {id === "windows" ? <LayoutGrid aria-hidden="true" /> : <Monitor aria-hidden="true" />}
       <span className="platform" id={`pf-${id}-name`}>
         {option.label}
         <small>
