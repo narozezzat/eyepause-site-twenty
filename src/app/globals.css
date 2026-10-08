@@ -128,6 +128,7 @@
     --border-strong: #8b959d;
     --accent: #0fcc94;
     --accent-text: #006b4d;
+    --scrollbar-track: color-mix(in oklab, var(--fg) 4%, var(--bg));
     --scrollbar-thumb: color-mix(in oklab, var(--fg) 22%, transparent);
     --scrollbar-thumb-hover: color-mix(in oklab, var(--accent-text) 75%, transparent);
     --accent-fg: #06271e;
@@ -167,6 +168,7 @@
       --border: #333b41;
       --border-strong: #697780;
       --accent-text: #0fcc94;
+      --scrollbar-track: color-mix(in oklab, var(--fg) 6%, var(--bg));
       --scrollbar-thumb: color-mix(in oklab, var(--fg) 18%, transparent);
       --scrollbar-thumb-hover: color-mix(in oklab, var(--accent-text) 60%, transparent);
       --accent-soft: #123b30;
@@ -191,6 +193,7 @@
     --border: #333b41;
     --border-strong: #697780;
     --accent-text: #0fcc94;
+    --scrollbar-track: color-mix(in oklab, var(--fg) 6%, var(--bg));
     --scrollbar-thumb: color-mix(in oklab, var(--fg) 18%, transparent);
     --scrollbar-thumb-hover: color-mix(in oklab, var(--accent-text) 60%, transparent);
     --accent-soft: #123b30;
@@ -209,9 +212,12 @@
   }
   html {
     scrollbar-gutter: stable;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   }
   :is(html, [data-slot="dropdown-menu-content"], .overflow-auto, .overflow-x-auto, .overflow-y-auto) {
     scrollbar-width: thin;
+  }
+  :is([data-slot="dropdown-menu-content"], .overflow-auto, .overflow-x-auto, .overflow-y-auto) {
     scrollbar-color: var(--scrollbar-thumb) transparent;
   }
   @media (hover: hover) {
@@ -225,7 +231,10 @@
         width: 12px;
         height: 12px;
       }
-      :is(html, [data-slot="dropdown-menu-content"], .overflow-auto, .overflow-x-auto, .overflow-y-auto)::-webkit-scrollbar-track {
+      html::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+      }
+      :is([data-slot="dropdown-menu-content"], .overflow-auto, .overflow-x-auto, .overflow-y-auto)::-webkit-scrollbar-track {
         background: transparent;
       }
       :is(html, [data-slot="dropdown-menu-content"], .overflow-auto, .overflow-x-auto, .overflow-y-auto)::-webkit-scrollbar-thumb {
@@ -247,6 +256,16 @@
     :is(html, [data-slot="dropdown-menu-content"], .overflow-auto, .overflow-x-auto, .overflow-y-auto) {
       scrollbar-width: auto;
       scrollbar-color: auto;
+    }
+  }
+  /* Phones and narrow windows: no scrollbar lane, content uses the full width. */
+  @media (max-width: 767px) {
+    :root {
+      scrollbar-width: none;
+      scrollbar-gutter: auto;
+    }
+    :root::-webkit-scrollbar {
+      display: none;
     }
   }
   html {
