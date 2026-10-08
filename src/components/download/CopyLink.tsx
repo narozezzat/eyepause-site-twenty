@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/cn";
-import { goClass, goSolidClass } from "./buttonStyles";
+import { Button } from "@/components/ui/button";
+import { CheckIcon, LinkIcon } from "@/components/ui/icons";
 
 type CopyState = "idle" | "copied" | "failed";
 
@@ -23,26 +23,26 @@ export function CopyLink() {
     } catch {
       setState("failed");
     }
-    timer.current = setTimeout(() => setState("idle"), 2400);
+    timer.current = setTimeout(() => setState("idle"), 2000);
   };
 
   return (
-    <>
-      <button type="button" className={cn(goClass, goSolidClass, "md:w-full")} onClick={copy}>
-        {state === "copied" ? "Link copied" : "Copy link"}
-      </button>
-      <span className="sr-only" role="status">
+    <div className="grid gap-2">
+      <Button
+        variant="secondary"
+        block
+        onClick={copy}
+        icon={state === "copied" ? <CheckIcon /> : <LinkIcon />}
+      >
+        {state === "copied" ? "Copied" : "Copy link"}
+      </Button>
+      <p className="m-0 text-caption text-fg-muted" aria-live="polite">
         {state === "copied"
-          ? "Link copied to clipboard"
+          ? "Link copied. Paste it into a message to your Mac."
           : state === "failed"
-            ? "Could not copy. Share this page from your browser menu instead."
+            ? "Could not copy. Use Share in your browser menu instead."
             : ""}
-      </span>
-      {state === "failed" ? (
-        <span className="text-xs text-fg-subtle" aria-hidden="true">
-          Could not copy. Share this page from your browser menu instead.
-        </span>
-      ) : null}
-    </>
+      </p>
+    </div>
   );
 }

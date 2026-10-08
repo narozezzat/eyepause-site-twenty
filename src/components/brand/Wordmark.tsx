@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 /**
  * EyePause wordmark with the mint focus dot, the one place the brand mint appears.

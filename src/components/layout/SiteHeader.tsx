@@ -1,39 +1,50 @@
-import Link from "next/link";
-import { Wordmark } from "@/components/brand/Wordmark";
+import { ArrowDownToLine } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-
-const nav = [
-  { href: "/#tour", label: "Tour" },
-  { href: "/#privacy", label: "Privacy" },
-  { href: "/#get", label: "Download" },
-];
-
-/** Brand and theme on one row; on phones the nav drops to its own row so every link stays reachable. */
+import { withBasePath } from "@/config/site";
 export function SiteHeader() {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-x-4 border-b border-border py-2.5">
-      <Link
-        className="inline-flex min-h-11 items-center text-lg leading-none no-underline"
-        href="/"
-        aria-label="EyePause home"
+    <>
+      <svg
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          width: 0,
+          height: 0,
+          overflow: "hidden",
+        }}
       >
-        <Wordmark />
-      </Link>
-      <nav
-        aria-label="Primary"
-        className="order-last -ml-2 flex w-full font-mono text-caption leading-none sm:order-none sm:ml-auto sm:w-auto sm:gap-2"
-      >
-        {nav.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="inline-flex min-h-11 items-center px-2 text-fg-muted no-underline hover:text-fg"
+        <defs>
+          <symbol id="eye" viewBox="0 0 24 24">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+          </symbol>
+        </defs>
+      </svg>
+      <header className="top">
+        <div className="wrap nav">
+          <a
+            className="brand"
+            href={withBasePath("/")}
+            aria-label="EyePause home"
           >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-      <ThemeToggle />
-    </header>
+            <svg aria-hidden="true">
+              <use href="#eye" />
+            </svg>
+            EyePause
+          </a>
+          <nav className="nav-links" aria-label="Main navigation">
+            <a href={withBasePath("/#the-break")}>The break</a>
+            <a href={withBasePath("/#your-day")}>Your day</a>
+          </nav>
+          <div className="nav-end">
+            <ThemeToggle />
+            <a className="nav-download" href={withBasePath("/#download")}>
+              Download
+              <ArrowDownToLine aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
