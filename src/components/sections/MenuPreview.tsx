@@ -1,8 +1,11 @@
 "use client";
-import { useState } from "react";
+import { heroTimer, useDemoTimer } from "@/hooks/useDemoTimer";
+import { cycleFraction, formatClock } from "@/lib/demo";
 export function MenuPreview() {
-  const [paused, setPaused] = useState(false);
-  const [time, setTime] = useState("12:48");
+  const { left, paused, skipped } = useDemoTimer(heroTimer);
+  const time = formatClock(left);
+  // The bar fills as the cycle runs, so it empties again on Skip.
+  const elapsed = 1 - cycleFraction(left, heroTimer.cycle);
   return (
     <div
       className="desktop"
@@ -28,6 +31,7 @@ export function MenuPreview() {
           <div
             className="timer-value"
             id="timer"
+            data-paused={paused || undefined}
             role="timer"
             aria-label={`Next break in ${time}`}
           >
@@ -36,29 +40,23 @@ export function MenuPreview() {
           <div className="timer-label" id="timer-label" role="status">
             {paused
               ? "Paused. Take your time."
-              : time === "20:00"
+              : skipped
                 ? "Next break in twenty minutes."
                 : "A little focus, then a little distance."}
           </div>
           <div className="progress">
-            <i></i>
+            <i style={{ width: `${(elapsed * 100).toFixed(2)}%` }}></i>
           </div>
         </div>
         <div className="pop-actions">
           <button
             id="pause"
             aria-pressed={paused}
-            onClick={() => setPaused(!paused)}
+            onClick={heroTimer.togglePause}
           >
             {paused ? "Resume timer" : "Pause timer"}
           </button>
-          <button
-            id="skip"
-            onClick={() => {
-              setTime("20:00");
-              setPaused(false);
-            }}
-          >
+          <button id="skip" onClick={heroTimer.skip}>
             Skip break
           </button>
         </div>

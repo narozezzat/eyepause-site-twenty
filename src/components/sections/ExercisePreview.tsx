@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { draw, prefersReducedMotion } from "@/components/motion/engine";
 
 const exercises = [
   {
@@ -40,8 +42,32 @@ const exercises = [
 export function ExercisePreview() {
   const [index, setIndex] = useState(0);
   const exercise = exercises[index];
+  const root = useRef<HTMLDivElement>(null);
+  const shown = useRef(index);
+  // Switching exercises redraws the eye path and eases the new words in.
+  useEffect(() => {
+    if (shown.current === index) return;
+    shown.current = index;
+    const el = root.current;
+    if (!el || prefersReducedMotion()) return;
+    const tweens = [
+      draw([...el.querySelectorAll(".exercise-figure svg > *")]),
+      gsap.from(
+        [...el.querySelectorAll(".exercise-figure .mono, [aria-live] > *")],
+        {
+          opacity: 0,
+          y: 6,
+          duration: 0.5,
+          stagger: 0.06,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
+        },
+      ),
+    ];
+    return () => tweens.forEach((t) => t.revert());
+  }, [index]);
   return (
-    <div className="exercise">
+    <div className="exercise" ref={root}>
       <div className="exercise-figure">
         <svg viewBox="0 0 400 150" role="img" aria-label={exercise.caption}>
           {exercise.art}

@@ -147,6 +147,7 @@
     --radius-card: 0px;
     --radius-window: 0px;
     --shadow-float: 0 16px 32px #00000018;
+    --shadow-header: 0 10px 28px -16px #101c2838;
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --sans: var(--font-archivo), sans-serif;
     --mono: var(--font-plex-mono), monospace;
@@ -171,6 +172,7 @@
       --success: #0fcc94;
       --success-soft: #123b30;
       --shadow-float: 0 20px 36px #00000030;
+      --shadow-header: 0 12px 30px -14px #000000b3;
       color-scheme: dark;
     }
   }
@@ -192,6 +194,7 @@
     --success: #0fcc94;
     --success-soft: #123b30;
     --shadow-float: 0 20px 36px #00000030;
+    --shadow-header: 0 12px 30px -14px #000000b3;
     color-scheme: dark;
   }
 
@@ -1600,4 +1603,20 @@
   .theme-trigger {
     transition: none;
   }
+}
+/* GSAP motion: the hero waits for its intro; the header lifts once the page scrolls. */
+html[data-motion="pending"] .hero {
+  visibility: hidden;
+}
+.top {
+  transition: box-shadow .5s var(--ease-out);
+}
+html[data-scrolled] .top {
+  box-shadow: var(--shadow-header);
+}
+#timer {
+  transition: opacity .5s var(--ease-out);
+}
+#timer[data-paused] {
+  opacity: .45;
 }

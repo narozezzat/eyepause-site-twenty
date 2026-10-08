@@ -37,6 +37,8 @@ export const viewport: Viewport = {
   ],
 };
 
+const motionBoot = `(function(){var r=document.documentElement;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;r.dataset.motion="pending";setTimeout(function(){if(r.dataset.motion==="pending")r.dataset.motion="off"},3000)})()`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -44,6 +46,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${archivo.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: motionBoot }} />
+      </head>
       <body>
         <ThemeProvider>
           <SkipLink />
