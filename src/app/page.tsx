@@ -3,6 +3,7 @@ import { DownloadPanel } from "@/components/download/DownloadPanel";
 import { MotionRuntime } from "@/components/motion/MotionRuntime";
 import { Chapters } from "@/components/sections/Chapters";
 import { Hero } from "@/components/sections/Hero";
+import { Watch } from "@/components/sections/Watch";
 import { getDownloads } from "@/lib/releases";
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
       <Splash />
       <main id="main" tabIndex={-1}>
         <Hero />
+        <Watch />
         <Chapters />
         <DownloadPanel options={options} />
       </main>
