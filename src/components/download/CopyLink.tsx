@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { CheckIcon, LinkIcon } from "@/components/ui/icons";
 
 type CopyState = "idle" | "copied" | "failed";

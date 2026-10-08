@@ -14,7 +14,11 @@ interface PlatformPickerProps {
   action: ReactNode;
 }
 
-/** Radiogroup with roving tabindex: arrows move and select, Home/End jump. Stacked on phones, inline from `sm`. */
+/**
+ * Radiogroup with roving tabindex: arrows move and select, Home/End jump. Stacked on phones, inline from `sm`.
+ * Hand-rolled rather than Radix RadioGroup: the selected entry nests its download button, and a
+ * Radix radio item is itself a button, which can't contain another one.
+ */
 export function PlatformPicker({
   options,
   selectedId,

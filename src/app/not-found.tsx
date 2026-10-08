@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buttonClass } from "@/components/ui/Button";
+import { buttonVariants } from "@/components/ui/button";
 import { ArrowLeftIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function NotFound() {
       <p className="mt-4 mb-8 max-w-prose text-lede text-pretty text-fg-muted">
         It moved, or never existed. Look twenty feet away for a moment, then head back.
       </p>
-      <Link className={buttonClass({ variant: "primary", size: "lg", block: true })} href="/">
+      <Link className={buttonVariants({ variant: "primary", size: "lg", block: true })} href="/">
         <ArrowLeftIcon />
         Back to EyePause
       </Link>
